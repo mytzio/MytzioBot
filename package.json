@@ -1,0 +1,30 @@
+{
+  "name": "mytziobot",
+  "version": "0.2.0",
+  "description": "Bot made for Mytzio's community",
+  "main": "src/Mytzio.js",
+  "dependencies": {
+    "@discordjs/opus": "^0.1.0",
+    "axios": "^0.19.2",
+    "discord.js": "github:discordjs/discord.js",
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.8.9",
+    "ytdl-core": "^1.0.7",
+    "ytpl": "^0.1.19"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mytzio/MytzioBot.git"
+  },
+  "keywords": [],
+  "author": "Teo Temonen <teo.temonen@protonmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mytzio/MytzioBot/issues"
+  },
+  "homepage": "https://github.com/mytzio/MytzioBot#readme"
+}
