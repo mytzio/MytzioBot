@@ -3,7 +3,7 @@ const Song = require('../classes/Song');
 const YTDL = require('ytdl-core');
 const YTPL = require('ytpl');
 const axios = require('axios');
-const guildSettings = require('./database');
+const Guild = require('../classes/Guild');
 const logger = require('./logger');
 
 // new Queue
@@ -196,9 +196,10 @@ async function executeStream(client, message, song) {
 		executeStream(client, message, guild.songs[0]);
 	});
 
-	guildSettings.findOne({ _id: message.guild.id }, (err, g) => {
-		dispatcher.setVolumeLogarithmic(g.mediaPlayer.volume / 100);
-	}).catch(e => logger.error(e));
+	const guildSettings = await Guild.getByID(message.guild.id);
+	const volume = guildSettings.mediaPlayer.volume;
+
+	dispatcher.setVolumeLogarithmic(volume / 100);
 }
 
 module.exports = {
