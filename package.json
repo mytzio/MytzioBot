@@ -2,6 +2,9 @@
   "name": "mytziobot",
   "version": "0.2.0",
   "description": "Bot made for Mytzio's community",
+  "engines": {
+    "node": "13.5.0"
+  },
   "main": "src/Mytzio.js",
   "dependencies": {
     "@discordjs/opus": "^0.1.0",
