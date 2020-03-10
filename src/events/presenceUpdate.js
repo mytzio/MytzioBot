@@ -36,13 +36,13 @@ module.exports.run = async (client, oldPresence, newPresence) => {
 
 		// Go thru every listed guild
 		thisGuild.act.forEach(act => {
-			const guild = client.guilds.get(thisGuild.id);
-			const member = guild.members.find(m => m.id === newPresence.userID);
+			const guild = client.guilds.cache.get(thisGuild.id);
+			const member = guild.members.cache.find(m => m.id === newPresence.userID);
 
 			// Check only when user have activities
 			if (newPresence.activities) {
 				const activity = newPresence.activities.find(a => a.type === act.type);
-				const role = guild.roles.find(r => r.name === act.name);
+				const role = guild.roles.cache.find(r => r.name === act.name);
 
 				// Check if user activity is found in this guild's scope
 				// Also check if role exists in guild
@@ -54,7 +54,7 @@ module.exports.run = async (client, oldPresence, newPresence) => {
 				// Check if user activity is NOT found in this guild's scope
 				// Also check if user has the role specified for this guild's scope
 				// Finally remove the role
-				if (!activity && member.roles.find(r => r.name === act.name)) {
+				if (!activity && member.roles.cache.find(r => r.name === act.name)) {
 					member.roles.remove(role).catch(e => console.log(e));
 				}
 			}
