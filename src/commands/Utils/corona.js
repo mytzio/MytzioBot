@@ -10,14 +10,24 @@ module.exports.run = async (client, message) => {
 	try {
 		const response = await axios.get(apiURL);
 
-		const latestCase = response.data.confirmed[response.data.confirmed.length - 1];
+		const confirmed = response.data.confirmed;
+		const deaths = response.data.deaths;
+		const recovered = response.data.recovered;
+
+		const lastCases = confirmed.slice(-5);
+		let infections = '';
+		lastCases.forEach(item => {
+			infections += `**${item.healthCareDistrict}** *${item.date.slice(0, 10)} - ${item.date.slice(11, 16)}*\n`;
+		});
 
 		const embed = new MessageEmbed()
 			.setTitle('Corona in Finland')
 			.setDescription('Statistics about COVID-19 in Finland')
-			.addField('Confirmed', response.data.confirmed.length, true)
-			.addField('Deaths', response.data.deaths.length, true)
-			.addField('Latest Infection', `${latestCase.date.slice(0, 10)} ${latestCase.date.slice(11, 16)}\n${latestCase.healthCareDistrict}`);
+			.addField('Confirmed', confirmed.length, true)
+			.addField('Deaths', deaths.length, true)
+			.addField('Recovered', recovered.length, true)
+			.addField('Last 5 Infections', infections)
+			.setFooter(`Replying to ${message.author.tag} - Sources: https://github.com/HS-Datadesk/koronavirus-avoindata`);
 
 		message.channel.send(embed);
 	}
