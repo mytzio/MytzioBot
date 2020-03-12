@@ -2,7 +2,7 @@ const MediaPlayer = require('../classes/MediaPlayer');
 const Song = require('../classes/Song');
 const YTDL = require('ytdl-core');
 const YTPL = require('ytpl');
-const axios = require('axios');
+const axios = require('axios').default;
 const Guild = require('../classes/Guild');
 const logger = require('./logger');
 
@@ -20,8 +20,10 @@ async function getID(query) {
 			logger.error(e);
 		}
 	}
+	// @ts-ignore
 	else if (YTPL.validateURL(query)) {
 		try {
+			// @ts-ignore
 			const id = await YTPL.getPlaylistID(query);
 			return id;
 		}
@@ -159,22 +161,10 @@ async function executeStream(client, message, song) {
 	guild.songs.shift();
 
 	if (!song) {
-		client.user.setPresence({}).catch((e) => logger.error(e));
-
 		guild.voiceChannel.leave();
 		delete queue[message.guild.id];
 		return;
 	}
-
-	client.user
-		.setPresence({
-			activity: {
-				name: song.title,
-				type: 'PLAYING',
-			},
-			status: 'online',
-		})
-		.catch((e) => logger.error(e));
 
 	const stream = YTDL(song.url, {
 		filter: 'audioonly',
