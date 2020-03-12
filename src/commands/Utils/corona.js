@@ -17,6 +17,7 @@ module.exports.run = async (client, message, args) => {
 
 		if (args[0] <= 0) args[0] = 1;
 		else if (args[0] > 10) args[0] = 10;
+		else if (isNaN(args[0])) args[0] = undefined;
 
 		const lastCount = args[0] || 3;
 
