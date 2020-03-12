@@ -1,8 +1,9 @@
 const axios = require('axios').default;
 const logger = require('../../utils/logger');
 const { MessageEmbed } = require('discord.js');
+const moment = require('moment');
 
-module.exports.run = async (client, message) => {
+module.exports.run = async (client, message, args) => {
 
 	const apiURL = 'https://w3qa5ydb4l.execute-api.eu-west-1.amazonaws.com/prod/finnishCoronaData';
 
@@ -14,11 +15,35 @@ module.exports.run = async (client, message) => {
 		const deaths = response.data.deaths;
 		const recovered = response.data.recovered;
 
-		const lastCases = confirmed.slice(-5);
-		let infections = '';
-		lastCases.forEach(item => {
-			infections += `**${item.healthCareDistrict}** *${item.date.slice(0, 10)} - ${item.date.slice(11, 16)}*\n`;
+		if (args[0] <= 0) args[0] = 1;
+		else if (args[0] > 10) args[0] = 10;
+
+		const lastCount = args[0] || 3;
+
+		// Repeating but working lol
+		const lastConfirmedCases = confirmed.slice(-lastCount);
+		let lastConfirmed = '';
+		lastConfirmedCases.forEach(item => {
+			const time = moment(item.date, moment.ISO_8601).utcOffset('+0200').format('DD.MM.YYYY HH:mm');
+			lastConfirmed += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
 		});
+		if (lastConfirmed.length <= 0) lastConfirmed = '-';
+
+		const lastDeathCases = deaths.slice(-lastCount);
+		let lastDeath = '';
+		lastDeathCases.forEach(item => {
+			const time = moment(item.date, moment.ISO_8601).utcOffset('+0200').format('DD.MM.YYYY HH:mm');
+			lastDeath += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
+		});
+		if (lastDeath.length <= 0) lastDeath = '-';
+
+		const lastRecoveredCases = recovered.slice(-lastCount);
+		let lastRecovered = '';
+		lastRecoveredCases.forEach(item => {
+			const time = moment(item.date, moment.ISO_8601).utcOffset('+0200').format('DD.MM.YYYY HH:mm');
+			lastRecovered += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
+		});
+		if (lastRecovered.length <= 0) lastRecovered = '-';
 
 		const embed = new MessageEmbed()
 			.setTitle('Corona in Finland')
@@ -26,7 +51,9 @@ module.exports.run = async (client, message) => {
 			.addField('Confirmed', confirmed.length, true)
 			.addField('Deaths', deaths.length, true)
 			.addField('Recovered', recovered.length, true)
-			.addField('Last 5 Infections', infections)
+			.addField(`Last ${lastCount} Confirmed`, lastConfirmed, true)
+			.addField(`Last ${lastCount} Deaths`, lastDeath, true)
+			.addField(`Last ${lastCount} Recovered`, lastRecovered, true)
 			.setFooter(`Replying to ${message.author.tag} - Sources: https://github.com/HS-Datadesk/koronavirus-avoindata`);
 
 		message.channel.send(embed);

@@ -12,6 +12,7 @@
     "discord.js": "^12.0.2",
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^3.0.0",
+    "moment": "^2.24.0",
     "mongoose": "^5.8.9",
     "ytdl-core": "^1.0.7",
     "ytpl": "^0.1.19"
