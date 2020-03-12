@@ -25,7 +25,7 @@ module.exports.run = async (client, message, args) => {
 		const lastConfirmedCases = confirmed.slice(-lastCount);
 		let lastConfirmed = '';
 		lastConfirmedCases.forEach(item => {
-			const time = moment(item.date, moment.ISO_8601).utcOffset('+0200').format('DD.MM.YYYY HH:mm');
+			const time = moment(item.date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
 			lastConfirmed += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
 		});
 		if (lastConfirmed.length <= 0) lastConfirmed = '-';
@@ -33,7 +33,7 @@ module.exports.run = async (client, message, args) => {
 		const lastDeathCases = deaths.slice(-lastCount);
 		let lastDeath = '';
 		lastDeathCases.forEach(item => {
-			const time = moment(item.date, moment.ISO_8601).utcOffset('+0200').format('DD.MM.YYYY HH:mm');
+			const time = moment(item.date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
 			lastDeath += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
 		});
 		if (lastDeath.length <= 0) lastDeath = '-';
@@ -41,7 +41,7 @@ module.exports.run = async (client, message, args) => {
 		const lastRecoveredCases = recovered.slice(-lastCount);
 		let lastRecovered = '';
 		lastRecoveredCases.forEach(item => {
-			const time = moment(item.date, moment.ISO_8601).utcOffset('+0200').format('DD.MM.YYYY HH:mm');
+			const time = moment(item.date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
 			lastRecovered += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
 		});
 		if (lastRecovered.length <= 0) lastRecovered = '-';
@@ -68,7 +68,7 @@ module.exports.help = {
 	name: 'corona',
 	description: 'Statistics about COVID-19 in Finland!',
 	aliases: ['c'],
-	usage: [],
+	usage: ['<1-10>'],
 };
 
 module.exports.config = {
