@@ -80,7 +80,7 @@ module.exports.help = {
 	name: 'corona',
 	description: 'Statistics about COVID-19 in Finland!',
 	aliases: ['c'],
-	usage: ['<1-10>'],
+	usage: [],
 };
 
 module.exports.config = {
