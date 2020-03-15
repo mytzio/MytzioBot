@@ -26,5 +26,5 @@ module.exports.help = {
 module.exports.config = {
 	args: true,
 	guildOnly: true,
-	requiredPermissions: [],
+	requiredPermissions: 0,
 };
