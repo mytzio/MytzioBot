@@ -19,7 +19,7 @@ module.exports.run = async (client, message) => {
 		if (!command) return;
 
 		// Required permissions for user
-		if (command.requiredPermissions && !(message.channel.type === 'dm')) {
+		if (command.config.requiredPermissions && !(message.channel.type === 'dm')) {
 			const perms = new Permissions(command.config.requiredPermissions);
 			if (!message.member.hasPermission(perms)) {
 				return message.channel.send(
