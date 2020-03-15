@@ -2,8 +2,9 @@ const axios = require('axios').default;
 const logger = require('../../utils/logger');
 const { MessageEmbed } = require('discord.js');
 const moment = require('moment');
+const _ = require('lodash');
 
-module.exports.run = async (client, message, args) => {
+module.exports.run = async (client, message) => {
 
 	const apiURL = 'https://w3qa5ydb4l.execute-api.eu-west-1.amazonaws.com/prod/finnishCoronaData';
 
@@ -15,47 +16,58 @@ module.exports.run = async (client, message, args) => {
 		const deaths = response.data.deaths;
 		const recovered = response.data.recovered;
 
-		if (args[0] <= 0) args[0] = 1;
-		else if (args[0] > 10) args[0] = 10;
-		else if (isNaN(args[0])) args[0] = undefined;
+		let lastConfirmed = confirmed.slice(-1);
+		try {
+			lastConfirmed[0].date = moment(lastConfirmed[0].date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
+			lastConfirmed = `**${lastConfirmed[0].healthCareDistrict}**\n*${lastConfirmed[0].date}*`;
+		}
+		catch (e) {
+			lastConfirmed = '-';
+		}
 
-		const lastCount = args[0] || 3;
+		let lastDeath = deaths.slice(-1);
+		try {
+			lastDeath[0].date = moment(lastDeath[0].date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
+			lastDeath = `**${lastDeath[0].healthCareDistrict}**\n*${lastDeath[0].date}*`;
+		}
+		catch (e) {
+			lastDeath = '-';
+		}
 
-		// Repeating but working lol
-		const lastConfirmedCases = confirmed.slice(-lastCount);
-		let lastConfirmed = '';
-		lastConfirmedCases.forEach(item => {
-			const time = moment(item.date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
-			lastConfirmed += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
-		});
-		if (lastConfirmed.length <= 0) lastConfirmed = '-';
-
-		const lastDeathCases = deaths.slice(-lastCount);
-		let lastDeath = '';
-		lastDeathCases.forEach(item => {
-			const time = moment(item.date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
-			lastDeath += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
-		});
-		if (lastDeath.length <= 0) lastDeath = '-';
-
-		const lastRecoveredCases = recovered.slice(-lastCount);
-		let lastRecovered = '';
-		lastRecoveredCases.forEach(item => {
-			const time = moment(item.date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
-			lastRecovered += `**${item.healthCareDistrict}**\n*${time}*\n\n`;
-		});
-		if (lastRecovered.length <= 0) lastRecovered = '-';
+		let lastRecovered = recovered.slice(-1);
+		try {
+			lastRecovered[0].date = moment(lastRecovered[0].date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
+			lastRecovered = `**${lastRecovered[0].healthCareDistrict}**\n*${lastRecovered[0].date}*`;
+		}
+		catch (e) {
+			lastRecovered = '-';
+		}
 
 		const embed = new MessageEmbed()
 			.setTitle('Corona in Finland')
 			.setDescription('Statistics about COVID-19 in Finland')
-			.addField('Confirmed', confirmed.length, true)
+			.addField('Infected', confirmed.length, true)
 			.addField('Deaths', deaths.length, true)
 			.addField('Recovered', recovered.length, true)
-			.addField(`Last ${lastCount} Confirmed`, lastConfirmed, true)
-			.addField(`Last ${lastCount} Deaths`, lastDeath, true)
-			.addField(`Last ${lastCount} Recovered`, lastRecovered, true)
+			.addField('\u200B', '\u200B')
+			.addField('Last Infected', lastConfirmed, true)
+			.addField('Last Death', lastDeath, true)
+			.addField('Last Recovered', lastRecovered, true)
+			.addField('\u200B', '\u200B')
 			.setFooter(`Replying to ${message.author.tag} - Sources: https://github.com/HS-Datadesk/koronavirus-avoindata`);
+
+		const districtsGrouped = _.groupBy(confirmed, d => d.healthCareDistrict);
+		const districtsGroupedArr = _.toArray(districtsGrouped);
+		const sorted = _.sortBy(districtsGroupedArr, d => d.length);
+		sorted.reverse();
+		let counter = 0;
+		for (let i = 0; i < 8; i++) {
+			const item = sorted[i];
+			embed.addField(item[0].healthCareDistrict, item.length, true);
+			counter += item.length;
+		}
+
+		embed.addField('Other', confirmed.length - counter, true);
 
 		message.channel.send(embed);
 	}
