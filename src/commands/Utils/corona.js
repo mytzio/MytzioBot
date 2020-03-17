@@ -1,8 +1,11 @@
 const axios = require('axios').default;
 const logger = require('../../utils/logger');
 const { MessageEmbed } = require('discord.js');
-const moment = require('moment');
 const _ = require('lodash');
+
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
 
 module.exports.run = async (client, message) => {
 
@@ -18,7 +21,7 @@ module.exports.run = async (client, message) => {
 
 		let lastConfirmed = confirmed.slice(-1);
 		try {
-			lastConfirmed[0].date = moment(lastConfirmed[0].date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
+			lastConfirmed[0].date = dayjs(lastConfirmed[0].date).utc().format('DD.MM.YYYY HH:mm');
 			lastConfirmed = `**${lastConfirmed[0].healthCareDistrict}**\n*${lastConfirmed[0].date}*`;
 		}
 		catch (e) {
@@ -27,7 +30,7 @@ module.exports.run = async (client, message) => {
 
 		let lastDeath = deaths.slice(-1);
 		try {
-			lastDeath[0].date = moment(lastDeath[0].date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
+			lastDeath[0].date = dayjs(lastDeath[0].date).utc().format('DD.MM.YYYY HH:mm');
 			lastDeath = `**${lastDeath[0].healthCareDistrict}**\n*${lastDeath[0].date}*`;
 		}
 		catch (e) {
@@ -36,7 +39,7 @@ module.exports.run = async (client, message) => {
 
 		let lastRecovered = recovered.slice(-1);
 		try {
-			lastRecovered[0].date = moment(lastRecovered[0].date, moment.ISO_8601).utcOffset('+0000').format('DD.MM.YYYY HH:mm');
+			lastRecovered[0].date = dayjs(lastRecovered[0].date).utc().format('DD.MM.YYYY HH:mm');
 			lastRecovered = `**${lastRecovered[0].healthCareDistrict}**\n*${lastRecovered[0].date}*`;
 		}
 		catch (e) {
