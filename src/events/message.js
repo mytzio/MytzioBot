@@ -23,7 +23,8 @@ module.exports.run = async (client, message) => {
 			const perms = new Permissions(command.config.requiredPermissions);
 			if (!message.member.hasPermission(perms)) {
 				return message.channel.send(
-					`You don't have enough permissions to run that command!\nPermissions \`${perms.toArray()}\` are required.`,
+					`You don't have enough permissions to run that command!\n
+					Permissions \`${perms.toArray()}\` are required.`,
 				);
 			}
 		}
@@ -53,6 +54,7 @@ module.exports.run = async (client, message) => {
 			message.channel.send('There was an error trying to execute that command!');
 		}
 
-		message.delete({ timeout: 5000 }).catch(() => logger.error('Could not delete message'));
+		// Delete command message after 5 seconds
+		message.delete({ timeout: 5000 }).catch(() => logger.error('Could not delete command message'));
 	}
 };
