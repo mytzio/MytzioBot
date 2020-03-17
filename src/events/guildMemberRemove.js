@@ -1,7 +1,9 @@
-module.exports.run = async (member) => {
-	const logChannel = member.guild.channels.cache.find(ch => ch.name === 'logger');
+'use strict';
 
-	if (!logChannel) return;
+module.exports.run = async (client, member) => {
+	const channel = member.guild.channels.cache.find(ch => ch.name === 'logger');
 
-	logChannel.send(`${member.user.username} left`);
+	if (!channel) return;
+
+	channel.send(`${member.user.username} left!`);
 };
