@@ -1,16 +1,22 @@
 const axios = require('axios').default;
 const logger = require('../../utils/logger');
+const Guild = require('../../classes/Guild');
 const { MessageEmbed } = require('discord.js');
 const _ = require('lodash');
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
+const localizedFormat = require('dayjs/plugin/localizedFormat');
 dayjs.extend(utc);
+dayjs.extend(localizedFormat);
 
 module.exports.run = async (client, message) => {
 
 	const apiURL = 'https://w3qa5ydb4l.execute-api.eu-west-1.amazonaws.com/prod/finnishCoronaData';
 
+	const guild = await Guild.getByID(message.guild.id);
+
+	require(`dayjs/locale/${guild.locale}`);
 
 	try {
 		const response = await axios.get(apiURL);
@@ -21,8 +27,8 @@ module.exports.run = async (client, message) => {
 
 		let lastConfirmed = confirmed.slice(-1);
 		try {
-			lastConfirmed[0].date = dayjs(lastConfirmed[0].date).utc().format('DD.MM.YYYY HH:mm');
-			lastConfirmed = `**${lastConfirmed[0].healthCareDistrict}**\n*${lastConfirmed[0].date}*`;
+			lastConfirmed[0].date = dayjs(lastConfirmed[0].date).utc(0o200).locale(guild.locale).format('L LT');
+			lastConfirmed = `**${lastConfirmed[0].healthCareDistrict != null ? lastConfirmed[0].healthCareDistrict : 'unknown'}**\n*${lastConfirmed[0].date}*`;
 		}
 		catch (e) {
 			lastConfirmed = '-';
@@ -30,8 +36,8 @@ module.exports.run = async (client, message) => {
 
 		let lastDeath = deaths.slice(-1);
 		try {
-			lastDeath[0].date = dayjs(lastDeath[0].date).utc().format('DD.MM.YYYY HH:mm');
-			lastDeath = `**${lastDeath[0].healthCareDistrict}**\n*${lastDeath[0].date}*`;
+			lastDeath[0].date = dayjs(lastDeath[0].date).utc(0o200).locale(guild.locale).format('L LT');
+			lastDeath = `**${lastDeath[0].healthCareDistrict != null ? lastDeath[0].healthCareDistrict : 'unknown'}**\n*${lastDeath[0].date}*`;
 		}
 		catch (e) {
 			lastDeath = '-';
@@ -39,8 +45,8 @@ module.exports.run = async (client, message) => {
 
 		let lastRecovered = recovered.slice(-1);
 		try {
-			lastRecovered[0].date = dayjs(lastRecovered[0].date).utc().format('DD.MM.YYYY HH:mm');
-			lastRecovered = `**${lastRecovered[0].healthCareDistrict}**\n*${lastRecovered[0].date}*`;
+			lastRecovered[0].date = dayjs(lastRecovered[0].date).utc(0o200).locale(guild.locale).format('L LT');
+			lastRecovered = `**${lastRecovered[0].healthCareDistrict != null ? lastRecovered[0].healthCareDistrict : 'unknown'}**\n*${lastRecovered[0].date}*`;
 		}
 		catch (e) {
 			lastRecovered = '-';
@@ -66,7 +72,7 @@ module.exports.run = async (client, message) => {
 		let counter = 0;
 		for (let i = 0; i < 8; i++) {
 			const item = sorted[i];
-			embed.addField(item[0].healthCareDistrict, item.length, true);
+			embed.addField(item[0].healthCareDistrict ? item[0].healthCareDistrict : 'unknown', item.length, true);
 			counter += item.length;
 		}
 
