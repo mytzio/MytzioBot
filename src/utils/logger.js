@@ -10,10 +10,6 @@ module.exports = {
 		console.trace();
 	},
 
-	message: msg => {
-		console.log(`[MESSAGE]: ${msg}`);
-	},
-
 	info: msg => {
 		console.log(`[INFO]: ${msg}`);
 	},
