@@ -86,9 +86,7 @@ module.exports.run = async (client, message) => {
 		};
 
 		activity();
-		setInterval(() => {
-			activity();
-		}, 300000);
+		setInterval(activity, 300000);
 	}
 	catch (e) {
 		logger.error(e);
