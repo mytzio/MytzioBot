@@ -19,7 +19,7 @@ module.exports.run = async (client, message) => {
 	require(`dayjs/locale/${guild.locale}`);
 
 	try {
-		let response = await axios.get(apiURL);
+		const response = await axios.get(apiURL);
 
 		const confirmed = response.data.confirmed;
 		const deaths = response.data.deaths;
@@ -82,8 +82,13 @@ module.exports.run = async (client, message) => {
 		message.channel.send(embed);
 
 		const activity = async () => {
-			response = await axios.get(apiURL);
-			client.user.setActivity(`C: ${confirmed.length}, D: ${deaths.length}, R: ${recovered.length}`, { type: 'WATCHING' });
+			this.response = await axios.get(apiURL);
+
+			this.confirmed = this.response.data.confirmed;
+			this.deaths = this.response.data.deaths;
+			this.recovered = this.response.data.recovered;
+
+			client.user.setActivity(`C: ${this.confirmed.length}, D: ${this.deaths.length}, R: ${this.recovered.length}`, { type: 'WATCHING' });
 		};
 
 		activity();
