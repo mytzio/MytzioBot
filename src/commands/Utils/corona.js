@@ -2,7 +2,6 @@ const axios = require('axios').default;
 const logger = require('../../utils/logger');
 const Guild = require('../../classes/Guild');
 const { MessageEmbed } = require('discord.js');
-const _ = require('lodash');
 
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
@@ -27,6 +26,22 @@ module.exports.run = async (client, message) => {
 
 		const date = (time) => {
 			return dayjs(time).utc(0o200).locale(guild.locale).format('L');
+		};
+
+		const estimateRecovered = (items) => {
+			const toTime = dayjs();
+
+			let counter = 0;
+			items.forEach(item => {
+				const fromTime = dayjs(item.date);
+				const time = fromTime.diff(toTime, 'day');
+
+				if (time < -13) {
+					counter++;
+				}
+			});
+
+			return counter;
 		};
 
 		const healthCareDistrict = (district) => {
@@ -55,29 +70,16 @@ module.exports.run = async (client, message) => {
 			.setDescription('Statistics about COVID-19 in Finland')
 			.addField('Confirmed', confirmed.length, true)
 			.addField('Deaths', deaths.length, true)
-			.addField('Recovered', recovered.length, true)
+			.addField('Recovered', `${recovered.length} (~${estimateRecovered(confirmed)})`, true)
 			.addField('\u200B', '\u200B')
 			.addField('Last Confirmed', lastCase(confirmed), true)
 			.addField('Last Death', lastCase(deaths), true)
 			.addField('Last Recovered', lastCase(recovered), true)
-			.addField('\u200B', '\u200B')
 			.setFooter(`Replying to ${message.author.tag} - Sources: https://github.com/HS-Datadesk/koronavirus-avoindata`);
 
 		await confirmed.forEach(item => {
 			if (item.healthCareDistrict < 1) item.healthCareDistrict = null;
 		});
-
-		const districtsGrouped = _.groupBy(confirmed, district => district.healthCareDistrict);
-		const sortedDescending = _.sortBy(districtsGrouped, district => district.length).reverse();
-
-		let counter = 0;
-		for (let i = 0; i < 8; i++) {
-			const item = sortedDescending[i];
-			embed.addField(healthCareDistrict(item[0].healthCareDistrict), item.length, true);
-			counter += item.length;
-		}
-
-		embed.addField('Other', confirmed.length - counter, true);
 
 		message.channel.send(embed);
 
