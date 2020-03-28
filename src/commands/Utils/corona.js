@@ -28,7 +28,7 @@ module.exports.run = async (client, message) => {
 			return dayjs(time).utc(0o200).locale(guild.locale).format('L');
 		};
 
-		const estimateRecovered = (items) => {
+		const estimate = (items) => {
 			const toTime = dayjs();
 
 			let counter = 0;
@@ -65,12 +65,15 @@ module.exports.run = async (client, message) => {
 			}
 		};
 
+		const currentInfections = confirmed.length - deaths.length - estimate(confirmed);
+		const currentRecovered = estimate(confirmed) - deaths.length;
+
 		const embed = new MessageEmbed()
 			.setTitle('Corona in Finland')
 			.setDescription('Statistics about COVID-19 in Finland')
-			.addField('Confirmed', confirmed.length, true)
+			.addField('Confirmed', `${confirmed.length} (~${currentInfections})`, true)
 			.addField('Deaths', deaths.length, true)
-			.addField('Recovered', `${recovered.length} (~${estimateRecovered(confirmed)})`, true)
+			.addField('Recovered', `${recovered.length} (~${currentRecovered})`, true)
 			.addField('\u200B', '\u200B')
 			.addField('Last Confirmed', lastCase(confirmed), true)
 			.addField('Last Death', lastCase(deaths), true)
